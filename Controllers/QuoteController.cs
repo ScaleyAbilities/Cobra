@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cobra.Controllers
 {
-    [Route("api/price")]
+    [Route("quote")]
     [ApiController]
-    public class PriceController : Controller
+    public class QuoteController : Controller
     {
-        // GET api/price/user/stockSymbol
+        // GET quote/user/stockSymbol
         [HttpGet("{user}/{stockSymbol}")]
-        public JsonResult Get(string user, string stockSymbol)
+        public ActionResult<string> Get(string user, string stockSymbol)
         {
             (var amount, var cryptokey) = QuoteSrvHelper.GetQuote(user, stockSymbol);
             
