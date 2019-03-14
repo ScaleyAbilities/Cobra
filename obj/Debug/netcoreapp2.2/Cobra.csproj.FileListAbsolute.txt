@@ -1,0 +1,6 @@
+c:\Users\micha\OneDrive\Documents\SENG468 - Scalability\Cobra\obj\Debug\netcoreapp2.2\Cobra.csprojAssemblyReference.cache
+c:\Users\micha\OneDrive\Documents\SENG468 - Scalability\Cobra\obj\Debug\netcoreapp2.2\Cobra.csproj.CoreCompileInputs.cache
+c:\Users\micha\OneDrive\Documents\SENG468 - Scalability\Cobra\obj\Debug\netcoreapp2.2\Cobra.RazorAssemblyInfo.cache
+c:\Users\micha\OneDrive\Documents\SENG468 - Scalability\Cobra\obj\Debug\netcoreapp2.2\Cobra.RazorAssemblyInfo.cs
+c:\Users\micha\OneDrive\Documents\SENG468 - Scalability\Cobra\obj\Debug\netcoreapp2.2\Cobra.AssemblyInfoInputs.cache
+c:\Users\micha\OneDrive\Documents\SENG468 - Scalability\Cobra\obj\Debug\netcoreapp2.2\Cobra.AssemblyInfo.cs

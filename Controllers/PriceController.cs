@@ -8,14 +8,15 @@ namespace Cobra.Controllers
 {
     [Route("api/price")]
     [ApiController]
-    public class PriceController : ControllerBase
+    public class PriceController : Controller
     {
-        // GET api/price/stockSymbol
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        // GET api/price/user/stockSymbol
+        [HttpGet("{user}/{stockSymbol}")]
+        public JsonResult Get(string user, string stockSymbol)
         {
-            // TODO - return stock price
-            return "value";
+            (var amount, var cryptokey) = QuoteSrvHelper.GetQuote(user, stockSymbol);
+            
+            return Json( new {amount = amount, cryptokey = cryptokey});
         }
     }
 }
