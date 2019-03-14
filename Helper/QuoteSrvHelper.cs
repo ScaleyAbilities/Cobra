@@ -20,9 +20,9 @@ namespace Cobra
 
         private static bool usingQuoteSrv = Environment.GetEnvironmentVariable("USING_QUOTE_SRV") == "TRUE" ? true : false;
 
-        public static (decimal, DateTime, string) GetQuote(string user, string stockSymbol) {
+        public static (decimal, string) GetQuote(string user, string stockSymbol) {
             if(!usingQuoteSrv)
-                return (10.00m, DateTime.Now, "not running quote srv");
+                return (10.00m, "not running quote srv");
 
             var ipHostInfo = Dns.GetHostEntry(quoteServer);
             var ipAddress = ipHostInfo.AddressList[0];
@@ -33,8 +33,8 @@ namespace Cobra
             
             if (cachedQuote == null) {
                 Console.WriteLine($"Quote Cache Miss: {stockSymbol}");
-                (var amount, var timestamp, var cryptokey) = GetQuoteFromQuoteServer(user, stockSymbol, ipHostInfo, ipAddress, remoteEndPoint);
-                return (amount, timestamp, cryptokey);
+                (var amount, var cryptokey) = GetQuoteFromQuoteServer(user, stockSymbol, ipHostInfo, ipAddress, remoteEndPoint);
+                return (amount, cryptokey);
             }
             else if (cachedQuote.Item2.AddMinutes(1) <= DateTime.Now) {
                 Thread thread = null;
@@ -46,13 +46,13 @@ namespace Cobra
                 thread.Start();
             }
             else {
-                return (cachedQuote.Item1, cachedQuote.Item2, "");
+                return (cachedQuote.Item1, "");
             }
 
-            return (cachedQuote.Item1, cachedQuote.Item2, cachedQuote.Item3);
+            return (cachedQuote.Item1, cachedQuote.Item3);
         }
         
-        private static (decimal, DateTime, string) GetQuoteFromQuoteServer(string user, string stockSymbol, IPHostEntry ipHostInfo, IPAddress ipAddress, IPEndPoint remoteEndPoint)
+        private static (decimal, string) GetQuoteFromQuoteServer(string user, string stockSymbol, IPHostEntry ipHostInfo, IPAddress ipAddress, IPEndPoint remoteEndPoint)
         {
             decimal amount;
             string cryptokey;
@@ -80,9 +80,8 @@ namespace Cobra
                 cryptokey = recv[4];
             }
 
-            var timestamp = DateTime.Now;
-            quoteCache[stockSymbol] = new Tuple<decimal, DateTime, string>(amount, timestamp, cryptokey);
-            return (amount, timestamp, cryptokey);
+            quoteCache[stockSymbol] = new Tuple<decimal, DateTime, string>(amount, DateTime.Now, cryptokey);
+            return (amount, cryptokey);
         }
     }
 }
