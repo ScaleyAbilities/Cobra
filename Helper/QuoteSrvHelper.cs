@@ -38,8 +38,7 @@ namespace Cobra
                 (var amount, var cryptokey) = GetQuoteFromQuoteServer(user, stockSymbol, ipHostInfo, ipAddress, remoteEndPoint);
                 return (amount, cryptokey);
             }
-
-            if (cachedQuote.Item2.AddMinutes(1) <= DateTime.Now) {
+            else if (cachedQuote.Item2.AddMinutes(1) <= DateTime.Now) {
                 Thread thread = null;
                 thread = new Thread(() => {
                     GetQuoteFromQuoteServer(user, stockSymbol, ipHostInfo, ipAddress, remoteEndPoint);
@@ -47,6 +46,9 @@ namespace Cobra
 
                 quoteCache[stockSymbol] = new Tuple<decimal, DateTime, string>(quoteCache[stockSymbol].Item1, DateTime.Now, quoteCache[stockSymbol].Item3);
                 thread.Start();
+            }
+            else {
+                return (cachedQuote.Item1, "");
             }
 
             return (cachedQuote.Item1, cachedQuote.Item3);
