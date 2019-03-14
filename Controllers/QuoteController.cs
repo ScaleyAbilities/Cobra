@@ -14,9 +14,9 @@ namespace Cobra.Controllers
         [HttpGet("{user}/{stockSymbol}")]
         public ActionResult<string> Get(string user, string stockSymbol)
         {
-            (var amount, var cryptokey) = QuoteSrvHelper.GetQuote(user, stockSymbol);
+            (var amount, var timestamp, var cryptokey) = QuoteSrvHelper.GetQuote(user, stockSymbol);
             
-            return Json( new {amount = amount, cryptokey = cryptokey});
+            return Json( new {amount = amount, timestamp = timestamp, cryptokey = cryptokey});
         }
     }
 }
