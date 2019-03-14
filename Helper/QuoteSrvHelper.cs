@@ -18,7 +18,7 @@ namespace Cobra
 
         private static Dictionary<string, Tuple<decimal, DateTime, string>> quoteCache = new Dictionary<string, Tuple<decimal, DateTime, string>>();
 
-        private static bool usingQuoteSrv = false;// Environment.GetEnvironmentVariable("USING_QUOTE_SRV") == "TRUE" ? true : false;
+        private static bool usingQuoteSrv = Environment.GetEnvironmentVariable("USING_QUOTE_SRV") == "TRUE" ? true : false;
 
         public static (decimal, string) GetQuote(string user, string stockSymbol) {
             if(!usingQuoteSrv)
