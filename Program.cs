@@ -19,6 +19,7 @@ namespace Cobra
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseUrls("http://*:5588/")
                 .UseStartup<Startup>();
     }
 }
