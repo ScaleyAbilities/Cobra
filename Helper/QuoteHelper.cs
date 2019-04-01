@@ -105,7 +105,7 @@ namespace Cobra
 
         private static void LogQuoteServer(decimal? amount, string quoteStockSymbol, string quoteUserId, string quoteServerTime, string cryptoKey)
         {
-            string logCommand = $"q,{amount},{quoteStockSymbol},{quoteUserId},{quoteServerTime},{cryptoKey}";
+            string logCommand = $"Cobra\nq,{amount},{quoteStockSymbol},{quoteUserId},{quoteServerTime},{cryptoKey}";
             RabbitHelper.PushLogEntry(logCommand);
         }
     }
