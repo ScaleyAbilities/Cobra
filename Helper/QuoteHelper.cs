@@ -21,6 +21,7 @@ namespace Cobra
 
         // Quote server port number
         private const int quotePort = 4448;
+        
         // Quote server url
         private static string quoteServer = "quoteserve.seng.uvic.ca";
 
@@ -83,10 +84,12 @@ namespace Cobra
                 Console.WriteLine($"Quote Server Message: {msgRecv}");
 
                 var amount = decimal.Parse(recv[0]);
-                // var quoteStockSymbol = recv[1];
-                // var quoteUserId = recv[2];
+                var quoteStockSymbol = recv[1];
+                var quoteUserId = recv[2];
                 var timestamp = recv[3];
                 var cryptokey = recv[4];
+
+                LogQuoteServer(amount, quoteStockSymbol, quoteUserId, timestamp, cryptokey);
 
                 quote = new Quote() {
                     amount = amount,
@@ -97,9 +100,13 @@ namespace Cobra
 
             quoteCache[stockSymbol] = new Tuple<decimal, DateTime>(quote.amount, DateTime.Now);
 
-            // TODO: LOG QUOTE SHIT
-
             return quote;
+        }
+
+        private static void LogQuoteServer(decimal? amount, string quoteStockSymbol, string quoteUserId, string quoteServerTime, string cryptoKey)
+        {
+            string logCommand = $"q,{amount},{quoteStockSymbol},{quoteUserId},{quoteServerTime},{cryptoKey}";
+            RabbitHelper.PushLogEntry(logCommand);
         }
     }
 }
