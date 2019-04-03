@@ -26,6 +26,7 @@ namespace Cobra
         private static string quoteServer = "quoteserve.seng.uvic.ca";
 
         private static ConcurrentDictionary<string, Tuple<decimal, DateTime>> quoteCache = new ConcurrentDictionary<string, Tuple<decimal, DateTime>>();
+        private static ConcurrentDictionary<string, Task<Quote>> requests = new ConcurrentDictionary<string, Task<Quote>>();
 
         private static bool usingQuoteSrv = Environment.GetEnvironmentVariable("USING_QUOTE_SRV") == "TRUE" ? true : false;
 
@@ -46,15 +47,18 @@ namespace Cobra
             Tuple<decimal, DateTime> cachedQuote = null;
             quoteCache.TryGetValue(stockSymbol, out cachedQuote);
             
-            if (cachedQuote == null) {
+            if (cachedQuote == null || cachedQuote.Item2.AddMinutes(1) <= DateTime.Now) {
                 Console.WriteLine($"!!! Quote cache miss: {stockSymbol}");
-                var quote = await GetQuoteFromQuoteServer(username, stockSymbol, transactionId);
-                return quote;
-            }
+                Task<Quote> request;
+                requests.TryGetValue(stockSymbol, out request);
 
-            if (cachedQuote.Item2.AddMinutes(1) <= DateTime.Now) {
-                _ = GetQuoteFromQuoteServer(username, stockSymbol, transactionId);
-                quoteCache[stockSymbol] = new Tuple<decimal, DateTime>(quoteCache[stockSymbol].Item1, DateTime.Now);
+                if (request == null) {
+                    request = requests[stockSymbol] = GetQuoteFromQuoteServer(username, stockSymbol, transactionId);
+                }
+                    
+                var quote = await request;
+                requests.TryRemove(stockSymbol, out _);
+                return quote;
             }
 
             Console.WriteLine($"Returned quote from cache: {stockSymbol}");
