@@ -53,12 +53,16 @@ namespace Cobra
                 requests.TryGetValue(stockSymbol, out request);
 
                 if (request == null) {
-                    request = requests[stockSymbol] = GetQuoteFromQuoteServer(username, stockSymbol, transactionId);
+                    request = requests[stockSymbol] = GetQuoteFromQuoteServer(username, stockSymbol, transactionId).ContinueWith((requestDone) => {
+                        requests.TryRemove(stockSymbol, out _);
+                        return requestDone.Result;
+                    });;
                 }
-                    
-                var quote = await request;
-                requests.TryRemove(stockSymbol, out _);
-                return quote;
+
+                if (cachedQuote == null) {
+                    var quote = await request;
+                    return quote;
+                }
             }
 
             Console.WriteLine($"Returned quote from cache: {stockSymbol}");
