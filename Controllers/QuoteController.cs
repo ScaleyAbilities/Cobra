@@ -11,10 +11,10 @@ namespace Cobra.Controllers
     public class QuoteController : Controller
     {
         // GET quote/user/stockSymbol
-        [HttpGet("{user}/{stockSymbol}")]
-        public async Task<ActionResult<string>> Get(string user, string stockSymbol)
+        [HttpGet("{user}/{stockSymbol}/{transactionId}")]
+        public async Task<ActionResult<string>> Get(string user, string stockSymbol, string transactionId)
         {
-            var quote = await QuoteHelper.GetQuote(user, stockSymbol);
+            var quote = await QuoteHelper.GetQuote(user, stockSymbol, transactionId);
             return Json(quote);
         }
     }

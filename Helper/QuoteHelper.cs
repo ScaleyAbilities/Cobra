@@ -39,7 +39,7 @@ namespace Cobra
             remoteEndPoint = new IPEndPoint(ipAddress, quotePort);
         }
 
-        public static async Task<Quote> GetQuote(string username, string stockSymbol) {
+        public static async Task<Quote> GetQuote(string username, string stockSymbol, string transactionId) {
             if(!usingQuoteSrv)
                 return new Quote() { amount = 100.00m };
             
@@ -48,12 +48,12 @@ namespace Cobra
             
             if (cachedQuote == null) {
                 Console.WriteLine($"!!! Quote cache miss: {stockSymbol}");
-                var quote = await GetQuoteFromQuoteServer(username, stockSymbol);
+                var quote = await GetQuoteFromQuoteServer(username, stockSymbol, transactionId);
                 return quote;
             }
 
             if (cachedQuote.Item2.AddMinutes(1) <= DateTime.Now) {
-                _ = GetQuoteFromQuoteServer(username, stockSymbol);
+                _ = GetQuoteFromQuoteServer(username, stockSymbol, transactionId);
                 quoteCache[stockSymbol] = new Tuple<decimal, DateTime>(quoteCache[stockSymbol].Item1, DateTime.Now);
             }
 
@@ -64,7 +64,7 @@ namespace Cobra
             };
         }
         
-        private static async Task<Quote> GetQuoteFromQuoteServer(string username, string stockSymbol)
+        private static async Task<Quote> GetQuoteFromQuoteServer(string username, string stockSymbol, string transactionId)
         {
             Quote quote;
             
@@ -89,7 +89,7 @@ namespace Cobra
                 var timestamp = recv[3];
                 var cryptokey = recv[4];
 
-                LogQuoteServer(amount, quoteStockSymbol, quoteUserId, timestamp, cryptokey);
+                LogQuoteServer(transactionId, amount, quoteStockSymbol, quoteUserId, timestamp, cryptokey);
 
                 quote = new Quote() {
                     amount = amount,
@@ -103,9 +103,9 @@ namespace Cobra
             return quote;
         }
 
-        private static void LogQuoteServer(decimal? amount, string quoteStockSymbol, string quoteUserId, string quoteServerTime, string cryptoKey)
+        private static void LogQuoteServer(string transactionId, decimal? amount, string quoteStockSymbol, string quoteUserId, string quoteServerTime, string cryptoKey)
         {
-            string logCommand = $"Cobra\nq,{amount},{quoteStockSymbol},{quoteUserId},{quoteServerTime},{cryptoKey}";
+            string logCommand = $"Cobra,{transactionId}{Environment.NewLine}q,{amount},{quoteStockSymbol},{quoteUserId},{quoteServerTime},{cryptoKey}";
             RabbitHelper.PushLogEntry(logCommand);
         }
     }
